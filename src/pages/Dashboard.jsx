@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { toast } from 'sonner'
@@ -14,7 +14,7 @@ export const Dashboard = () => {
   const [activeView, setActiveView] = useState('gallery') // 'gallery' or 'map'
   const { user, signOut } = useAuth()
 
-  const fetchPhotos = async () => {
+  const fetchPhotos = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('photos')
@@ -32,13 +32,13 @@ export const Dashboard = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   useEffect(() => {
     if (user) {
       fetchPhotos()
     }
-  }, [user])
+  }, [user, fetchPhotos])
 
   const handleUploadSuccess = () => {
     fetchPhotos()

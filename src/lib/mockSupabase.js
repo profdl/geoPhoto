@@ -113,7 +113,7 @@ class MockSupabaseClient {
     })
 
     switch (operation) {
-      case 'select':
+      case 'select': {
         // Apply ordering
         if (orderBy) {
           tableData.sort((a, b) => {
@@ -129,8 +129,9 @@ class MockSupabaseClient {
           data: singleResult ? tableData[0] || null : tableData,
           error: null
         }
+      }
 
-      case 'insert':
+      case 'insert': {
         const allData = JSON.parse(localStorage.getItem(tableKey) || '[]')
         const newRecords = Array.isArray(data) ? data : [data]
 
@@ -146,8 +147,9 @@ class MockSupabaseClient {
 
         localStorage.setItem(tableKey, JSON.stringify(allData))
         return { data: newRecords, error: null }
+      }
 
-      case 'update':
+      case 'update': {
         // Update matching records
         const allRecords = JSON.parse(localStorage.getItem(tableKey) || '[]')
         let updated = false
@@ -171,8 +173,9 @@ class MockSupabaseClient {
         }
 
         return { data: null, error: null }
+      }
 
-      case 'delete':
+      case 'delete': {
         const remainingRecords = JSON.parse(localStorage.getItem(tableKey) || '[]')
           .filter(record => {
             let matches = record.user_id === this.currentUser?.id
@@ -186,6 +189,7 @@ class MockSupabaseClient {
 
         localStorage.setItem(tableKey, JSON.stringify(remainingRecords))
         return { data: null, error: null }
+      }
 
       default:
         return { data: null, error: null }
@@ -194,7 +198,7 @@ class MockSupabaseClient {
 
   get auth() {
     return {
-      signUp: async ({ email, password }) => {
+      signUp: async ({ email }) => {
         const user = {
           id: crypto.randomUUID(),
           email,
@@ -206,7 +210,7 @@ class MockSupabaseClient {
         return { data: { user }, error: null }
       },
 
-      signInWithPassword: async ({ email, password }) => {
+      signInWithPassword: async ({ email }) => {
         // In mock mode, any email/password works
         const user = {
           id: crypto.randomUUID(),
