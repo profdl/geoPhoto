@@ -13,7 +13,9 @@
       "Bash(netlify --version:*)",
       "Bash(npm uninstall:*)",
       "Bash(npm run lint:*)",
-      "Bash(netlify status:*)"
+      "Bash(netlify status:*)",
+      "Bash(git push:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": [],
     "ask": []
