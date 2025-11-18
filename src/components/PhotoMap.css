@@ -1,0 +1,30 @@
+.photo-map-container {
+  margin-top: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.empty-map {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-size: 16px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  margin-top: 30px;
+}
+
+.map-popup img {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.map-popup p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #666;
+}
