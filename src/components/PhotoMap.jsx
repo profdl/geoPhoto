@@ -18,29 +18,34 @@ L.Icon.Default.mergeOptions({
 export const PhotoMap = ({ photos }) => {
   const photosWithLocation = photos.filter(p => p.latitude && p.longitude)
 
-  if (photosWithLocation.length === 0) {
-    return (
-      <div className="empty-map">
-        <p>No photos with location data yet. Upload photos with GPS information!</p>
-      </div>
-    )
-  }
+  // Default center (world view) if no geotagged photos
+  let centerLat = 20
+  let centerLng = 0
+  let zoom = 2
 
-  // Calculate center based on all photos
-  const centerLat = photosWithLocation.reduce((sum, p) => sum + p.latitude, 0) / photosWithLocation.length
-  const centerLng = photosWithLocation.reduce((sum, p) => sum + p.longitude, 0) / photosWithLocation.length
+  // Calculate center based on photos with location data
+  if (photosWithLocation.length > 0) {
+    centerLat = photosWithLocation.reduce((sum, p) => sum + p.latitude, 0) / photosWithLocation.length
+    centerLng = photosWithLocation.reduce((sum, p) => sum + p.longitude, 0) / photosWithLocation.length
+    zoom = 10
+  }
 
   return (
     <div className="photo-map-container">
       <MapContainer
         center={[centerLat, centerLng]}
-        zoom={10}
+        zoom={zoom}
         style={{ height: '500px', width: '100%', borderRadius: '12px' }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        {photosWithLocation.length === 0 && (
+          <div className="map-overlay">
+            <p>No photos with location data yet. Upload photos with GPS information to see them on the map!</p>
+          </div>
+        )}
         {photosWithLocation.map((photo) => (
           <Marker key={photo.id} position={[photo.latitude, photo.longitude]}>
             <Popup>

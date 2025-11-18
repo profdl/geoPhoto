@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { toast } from 'sonner'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
 import './Auth.css'
 
 export const Signup = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const { signUp } = useAuth()
@@ -15,14 +18,15 @@ export const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
 
     if (password !== confirmPassword) {
-      return setError('Passwords do not match')
+      toast.error('Passwords do not match')
+      return
     }
 
     if (password.length < 6) {
-      return setError('Password must be at least 6 characters')
+      toast.error('Password must be at least 6 characters')
+      return
     }
 
     setLoading(true)
@@ -30,9 +34,14 @@ export const Signup = () => {
     try {
       await signUp(email, password)
       setSuccess(true)
+      toast.success('Account created successfully!', {
+        description: 'Please check your email to verify your account'
+      })
       setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
-      setError(err.message || 'Failed to create account')
+      toast.error('Failed to create account', {
+        description: err.message || 'Please try again'
+      })
     } finally {
       setLoading(false)
     }
@@ -55,12 +64,10 @@ export const Signup = () => {
         <h1>GeoPhoto</h1>
         <h2>Create Account</h2>
 
-        {error && <div className="error-message">{error}</div>}
-
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
+            <Label htmlFor="email">Email</Label>
+            <Input
               id="email"
               type="email"
               value={email}
@@ -71,8 +78,8 @@ export const Signup = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
+            <Label htmlFor="password">Password</Label>
+            <Input
               id="password"
               type="password"
               value={password}
@@ -84,8 +91,8 @@ export const Signup = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Input
               id="confirmPassword"
               type="password"
               value={confirmPassword}
@@ -96,9 +103,9 @@ export const Signup = () => {
             />
           </div>
 
-          <button type="submit" disabled={loading} className="btn-primary">
+          <Button type="submit" disabled={loading} className="w-full">
             {loading ? 'Creating account...' : 'Sign Up'}
-          </button>
+          </Button>
         </form>
 
         <p className="auth-link">

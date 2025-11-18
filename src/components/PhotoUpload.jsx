@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import * as exifr from 'exifr'
+import { toast } from 'sonner'
+import { Button } from './ui/button'
 import './PhotoUpload.css'
 
 export const PhotoUpload = ({ onUploadSuccess }) => {
   const [uploading, setUploading] = useState(false)
-  const [error, setError] = useState('')
   const { user } = useAuth()
 
   const handleFileChange = async (e) => {
@@ -14,12 +15,11 @@ export const PhotoUpload = ({ onUploadSuccess }) => {
     if (!file) return
 
     if (!file.type.startsWith('image/')) {
-      setError('Please select an image file')
+      toast.error('Please select an image file')
       return
     }
 
     setUploading(true)
-    setError('')
 
     try {
       // Extract EXIF data
@@ -38,7 +38,9 @@ export const PhotoUpload = ({ onUploadSuccess }) => {
       }
 
       if (!latitude || !longitude) {
-        setError('Warning: No GPS data found in photo EXIF')
+        toast.warning('No GPS data found in photo EXIF', {
+          description: 'Photo will be uploaded without location information'
+        })
       }
 
       // Upload to Supabase Storage
@@ -72,14 +74,19 @@ export const PhotoUpload = ({ onUploadSuccess }) => {
 
       // Reset input and notify parent
       e.target.value = ''
+      toast.success('Photo uploaded successfully!', {
+        description: latitude && longitude
+          ? `Location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
+          : 'No location data'
+      })
+
       if (onUploadSuccess) onUploadSuccess()
 
-      if (!latitude || !longitude) {
-        setTimeout(() => setError(''), 3000)
-      }
     } catch (err) {
       console.error('Upload error:', err)
-      setError(err.message || 'Failed to upload photo')
+      toast.error('Failed to upload photo', {
+        description: err.message || 'An unexpected error occurred'
+      })
     } finally {
       setUploading(false)
     }
@@ -87,9 +94,18 @@ export const PhotoUpload = ({ onUploadSuccess }) => {
 
   return (
     <div className="photo-upload">
-      <label htmlFor="photo-input" className="upload-button">
-        {uploading ? 'Uploading...' : '+ Upload Photo'}
-      </label>
+      <Button asChild>
+        <label
+          htmlFor="photo-input"
+          style={{
+            cursor: uploading ? 'not-allowed' : 'pointer',
+            pointerEvents: uploading ? 'none' : 'auto',
+            opacity: uploading ? 0.6 : 1
+          }}
+        >
+          {uploading ? 'Uploading...' : '+ Upload Photo'}
+        </label>
+      </Button>
       <input
         id="photo-input"
         type="file"
@@ -98,7 +114,6 @@ export const PhotoUpload = ({ onUploadSuccess }) => {
         disabled={uploading}
         style={{ display: 'none' }}
       />
-      {error && <p className="upload-error">{error}</p>}
     </div>
   )
 }

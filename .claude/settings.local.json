@@ -8,7 +8,10 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(gh:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(netlify --version:*)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": [],
     "ask": []

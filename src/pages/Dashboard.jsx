@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
+import { toast } from 'sonner'
 import { PhotoUpload } from '../components/PhotoUpload'
 import { PhotoGallery } from '../components/PhotoGallery'
 import { PhotoMap } from '../components/PhotoMap'
+import { Button } from '../components/ui/button'
 import './Dashboard.css'
 
 export const Dashboard = () => {
@@ -24,6 +26,9 @@ export const Dashboard = () => {
       setPhotos(data || [])
     } catch (err) {
       console.error('Error fetching photos:', err)
+      toast.error('Failed to load photos', {
+        description: err.message
+      })
     } finally {
       setLoading(false)
     }
@@ -42,8 +47,10 @@ export const Dashboard = () => {
   const handleSignOut = async () => {
     try {
       await signOut()
+      toast.success('Signed out successfully')
     } catch (err) {
       console.error('Error signing out:', err)
+      toast.error('Failed to sign out')
     }
   }
 
@@ -61,9 +68,9 @@ export const Dashboard = () => {
         <h1>GeoPhoto</h1>
         <div className="header-actions">
           <span className="user-email">{user?.email}</span>
-          <button onClick={handleSignOut} className="btn-signout">
+          <Button onClick={handleSignOut} variant="outline" size="sm">
             Sign Out
-          </button>
+          </Button>
         </div>
       </header>
 
@@ -73,18 +80,18 @@ export const Dashboard = () => {
         </div>
 
         <div className="view-toggle">
-          <button
-            className={activeView === 'gallery' ? 'active' : ''}
+          <Button
+            variant={activeView === 'gallery' ? 'default' : 'ghost'}
             onClick={() => setActiveView('gallery')}
           >
             Gallery View
-          </button>
-          <button
-            className={activeView === 'map' ? 'active' : ''}
+          </Button>
+          <Button
+            variant={activeView === 'map' ? 'default' : 'ghost'}
             onClick={() => setActiveView('map')}
           >
             Map View
-          </button>
+          </Button>
         </div>
 
         {activeView === 'gallery' ? (

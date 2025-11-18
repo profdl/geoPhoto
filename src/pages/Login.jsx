@@ -1,26 +1,31 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { toast } from 'sonner'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
 import './Auth.css'
 
 export const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { signIn } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
     setLoading(true)
 
     try {
       await signIn(email, password)
+      toast.success('Welcome back!')
       navigate('/')
     } catch (err) {
-      setError(err.message || 'Failed to sign in')
+      toast.error('Failed to sign in', {
+        description: err.message || 'Please check your credentials and try again'
+      })
     } finally {
       setLoading(false)
     }
@@ -32,12 +37,10 @@ export const Login = () => {
         <h1>GeoPhoto</h1>
         <h2>Login</h2>
 
-        {error && <div className="error-message">{error}</div>}
-
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
+            <Label htmlFor="email">Email</Label>
+            <Input
               id="email"
               type="email"
               value={email}
@@ -48,8 +51,8 @@ export const Login = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
+            <Label htmlFor="password">Password</Label>
+            <Input
               id="password"
               type="password"
               value={password}
@@ -60,9 +63,9 @@ export const Login = () => {
             />
           </div>
 
-          <button type="submit" disabled={loading} className="btn-primary">
+          <Button type="submit" disabled={loading} className="w-full">
             {loading ? 'Signing in...' : 'Sign In'}
-          </button>
+          </Button>
         </form>
 
         <p className="auth-link">

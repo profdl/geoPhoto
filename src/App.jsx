@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 import { Login } from './pages/Login'
 import { Signup } from './pages/Signup'
 import { Dashboard } from './pages/Dashboard'
+import { Toaster } from './components/ui/sonner'
 import './App.css'
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <Toaster />
       </AuthProvider>
     </Router>
   )
